@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { RequestLogin } from "../types/requestLogin";
 import { ReturnLogin } from "../types/returnLogin";
-import { ConnectionAPIPost } from "../functions/connections/connectionAPI";
+import ConnectionAPI, { ConnectionAPIPost, MethodType } from "../functions/connections/connectionAPI";
 import { useUserReducer } from "../../store/reducers/userReducer/useUserReducer";
 import { useGlobalReducer } from "../../store/reducers/globalReducer/useGlobalReducer";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { MenuUrl } from "../enums/MenuUrl.enum";
 import { setAuthorizationToken } from "../functions/connections/auth";
 
+interface requestProps<T> {
+    url: string;
+    method: MethodType;
+    saveGlobal?: (object: T) => void;
+    body?: unknown;
+    message?: string;
+}
 
 
 export const useRequest = () => {
@@ -16,6 +23,36 @@ export const useRequest = () => {
     const { setModal } = useGlobalReducer();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
+
+    const request = async <T>({ url, method, saveGlobal, body, message }: requestProps<T>): Promise<T | undefined> => {
+
+        setLoading(true);
+        const returnObject: T | undefined = await ConnectionAPI.connect<T>(url, method, body)
+            .then((result) => {
+                if (saveGlobal) {
+                    saveGlobal(result)
+                }
+                if (message) {
+                    setModal({
+                        visible: true,
+                        title: 'Sucesso!',
+                        text: message,
+                    });
+                }
+
+                return result
+            })
+            .catch((error: Error) => {
+                setModal({
+                    visible: true,
+                    title: 'Erro',
+                    text: error.message,
+                });
+                return undefined;
+            })
+        setLoading(false);
+        return returnObject;
+    }
 
     const authRequest = async (body: RequestLogin) => {
         setLoading(true);
@@ -26,7 +63,7 @@ export const useRequest = () => {
                 setUser(result.user);
                 reset({
                     index: 0,
-                    routes: [{ name: MenuUrl.HOME}],
+                    routes: [{ name: MenuUrl.HOME }],
                 });
             })
             .catch(() => {
@@ -41,7 +78,9 @@ export const useRequest = () => {
     return {
         loading,
         errorMessage,
+        request,
         authRequest,
-        setErrorMessage
+        setErrorMessage,
+
     };
 };
