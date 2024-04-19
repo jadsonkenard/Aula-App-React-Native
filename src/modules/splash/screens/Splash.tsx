@@ -6,7 +6,10 @@ import { MethodEnum } from "../../../enums/methods.enums";
 import { useUserReducer } from "../../../store/reducers/userReducer/useUserReducer";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { MenuUrl } from "../../../shared/enums/MenuUrl.enum";
+import { getAuthorizationToken } from "../../../shared/functions/connections/auth";
+import { UserType } from "../../../shared/types/usetType";
 
+const TIME_SLEEP = 5000
 
 const Splash = () => {
     const { reset } = useNavigation<NavigationProp<ParamListBase>>();
@@ -14,13 +17,24 @@ const Splash = () => {
     const { setUser } = useUserReducer();
 
     useEffect(() => {
-        const verifyLogin = async () => {
-            const returnUser = await request({
-                url: URL_USER,
-                method: MethodEnum.GET,
-                saveGlobal: setUser,
-            });
+        const findUser = async (): Promise<undefined | UserType> => {
+            let returnUser;
+            const token = await getAuthorizationToken();
+            if (token){
+                returnUser = await request<UserType>({
+                    url: URL_USER,
+                    method: MethodEnum.GET,
+                    saveGlobal: setUser,
+                });
+            }
+            return returnUser
+        }
 
+        const verifyLogin = async () => {
+            const [returnUser] = await Promise.all([
+                findUser(),
+                new Promise((r: any) => setTimeout(r, TIME_SLEEP)),
+            ])
             if (returnUser) {
                 reset({
                     index: 0,

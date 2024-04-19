@@ -14,6 +14,6 @@ export const useUserReducer = () => {
 
     return {
         user,
-        setUser
+        setUser,
     }
 }
