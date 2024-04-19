@@ -2,8 +2,11 @@ import { useState } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native";
 import { useRequest } from "../../../shared/hooks/useRequest";
 import { useUserReducer } from "../../../store/reducers/userReducer/useUserReducer";
+import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
+import { MenuUrl } from "../../../shared/enums/MenuUrl.enum";
 
 export const useLogin = () => {
+    const { navigate } = useNavigation<NavigationProp<ParamListBase>>();
     const { user } = useUserReducer();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -16,6 +19,10 @@ export const useLogin = () => {
             email,
             password,
         })
+    }
+
+    const handleGoToCreateUser = () => {
+        navigate(MenuUrl.CREATE_USER);
     }
 
     const handleOnChangeEmail = (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
@@ -34,6 +41,7 @@ export const useLogin = () => {
         errorMessage,
         handleOnPress,
         handleOnChangeEmail,
-        handleOnChangePassword
+        handleOnChangePassword,
+        handleGoToCreateUser,
     }
 }
