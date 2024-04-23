@@ -43,6 +43,7 @@ const CreateUser = () => {
             onChange={(event) => handleOnChangeInput(event, 'password')}
             margin="0px 0px 16px 0px"
             placeholder="Digite"
+            secureTextEntry
             title="Senha"
             />
             <Input
@@ -50,6 +51,7 @@ const CreateUser = () => {
             onChange={(event) => handleOnChangeInput(event, 'confirmPassword')}
             margin="0px 0px 16px 0px"
             placeholder="Digite"
+            secureTextEntry
             title="Confimar senha"
             />
 
