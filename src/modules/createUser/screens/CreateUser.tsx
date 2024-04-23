@@ -2,9 +2,17 @@ import Input from "../../../shared/components/input/Input";
 import Button from "../../../shared/components/button/Button";
 import { useCreateUser } from "../hooks/useCreateUser";
 import { CreateUserContainerUser } from "../styles/CreateUser.style";
+import { useRef } from "react";
+import { TextInput } from "react-native";
 
 const CreateUser = () => {
     const { createUser, disabled,loading, handleOnChangeInput, handleCreateUser } = useCreateUser();
+
+    const phoneInput = useRef<TextInput>(null)
+    const emailInput = useRef<TextInput>(null)
+    const cpfInput = useRef<TextInput>(null)
+    const passwordInput = useRef<TextInput>(null)
+    const confirmPasswordInput = useRef<TextInput>(null)
 
     return (
         <CreateUserContainerUser>
@@ -14,6 +22,7 @@ const CreateUser = () => {
             margin="0px 0px 16px 0px"
             placeholder="Digite"
             title="Nome completo"
+            onSubmitEditing={() => phoneInput?.current?.focus()}
             />
             <Input
             value={createUser.phone}
@@ -22,6 +31,9 @@ const CreateUser = () => {
             placeholder="Digite"
             type="cel-phone"
             title="Telefone"
+            ref={phoneInput}
+            onSubmitEditing={() => emailInput?.current?.focus()}
+            keyboardType="number-pad"
             />
             <Input
             value={createUser.email}
@@ -29,6 +41,9 @@ const CreateUser = () => {
             margin="0px 0px 16px 0px"
             placeholder="Digite"
             title="Email"
+            ref={emailInput}
+            onSubmitEditing={() => cpfInput?.current?.focus()}
+            keyboardType="email-address"
             />
             <Input
             value={createUser.cpf}
@@ -37,6 +52,8 @@ const CreateUser = () => {
             placeholder="Digite"
             type="cpf"
             title="CPF"
+            ref={cpfInput}
+            onSubmitEditing={() => passwordInput?.current?.focus()}
             />
             <Input
             value={createUser.password}
@@ -45,6 +62,8 @@ const CreateUser = () => {
             placeholder="Digite"
             secureTextEntry
             title="Senha"
+            ref={passwordInput}
+            onSubmitEditing={() => confirmPasswordInput?.current?.focus()}
             />
             <Input
             value={createUser.confirmPassword}
@@ -53,6 +72,8 @@ const CreateUser = () => {
             placeholder="Digite"
             secureTextEntry
             title="Confimar senha"
+            ref={confirmPasswordInput}
+            // onEndEditing={handleCreateUser} //cadastrando sem validações
             />
 
             <Button
