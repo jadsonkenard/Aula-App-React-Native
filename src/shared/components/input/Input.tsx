@@ -5,16 +5,45 @@ import Text from "../text/Text";
 import { textTypes } from "../text/texteTypes";
 import { theme } from "../../themes/themes";
 import { useState } from "react";
+import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native/types";
+import { insertKaskInCpf } from "../../functions/cpf";
+import { insertKaskInPhone } from "../../functions/phone";
+
 
 interface InputProps extends TextInputProps {
     title?: string;
     errorMessege?: string;
     secureTextEntry?: boolean;
-    margin?: string
+    margin?: string;
+    type?: 'cel-phone' | 'cpf';
 }
 
-const Input = ({ secureTextEntry, margin, title, errorMessege, ...props }: InputProps) => {
-    const [currentSecure, setCurrentSecure] = useState<boolean>(!!secureTextEntry)
+const Input = ({ secureTextEntry, margin, title, errorMessege, onChange, type, ...props }: InputProps) => {
+    const [currentSecure, setCurrentSecure] = useState<boolean>(!!secureTextEntry);
+
+    const handleOnChange = (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
+        if (onChange){
+            let text = event.nativeEvent.text;
+        switch (type) {
+            case 'cpf':
+                text = insertKaskInCpf(text);
+                break;
+            case 'cel-phone':
+                text = insertKaskInPhone(text);
+                break;
+            default:
+                text = event.nativeEvent.text;
+                break;
+        }
+            onChange({
+                ...event,
+                nativeEvent: {
+                    ...event.nativeEvent,
+                    text,
+                }
+            });
+        }
+    }
 
     const handleOnPressEye = () => {
         setCurrentSecure((current) => !current)
@@ -31,9 +60,12 @@ const Input = ({ secureTextEntry, margin, title, errorMessege, ...props }: Input
             )}
             <View>
                 <ContainerInput
+                {...props}
                 hasSecureTextEntry={secureTextEntry}
                 secureTextEntry={currentSecure}
-                isError={!!errorMessege} {...props} />
+                isError={!!errorMessege}
+                onChange={handleOnChange}
+                />
                 {secureTextEntry && (<IconEye onPress={handleOnPressEye} name={currentSecure ? 'eye' : 'eye-blocked'} size={20}/>)}
             </View>
             {errorMessege && (
