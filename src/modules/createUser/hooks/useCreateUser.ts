@@ -6,8 +6,9 @@ import { MethodEnum } from "../../../enums/methods.enums";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { MenuUrl } from "../../../shared/enums/MenuUrl.enum";
 import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native/types";
-import { insertKaskInCpf } from "../../../shared/functions/cpf";
-import { insertKaskInPhone } from "../../../shared/functions/phone";
+import { insertKaskInCpf, validateCpf } from "../../../shared/functions/cpf";
+import { insertKaskInPhone, validatePhone } from "../../../shared/functions/phone";
+import { validateEmail } from "../../../shared/functions/email";
 
 export const useCreateUser = () => {
     const { reset } = useNavigation<NavigationProp<ParamListBase>>();
@@ -25,9 +26,9 @@ export const useCreateUser = () => {
     useEffect(() => {
         if (
             createUser.name !== '' &&
-            createUser.phone !== '' &&
-            createUser.email !== '' &&
-            createUser.cpf !== '' &&
+            validatePhone(createUser.phone) &&
+            validateEmail(createUser.email) &&
+            validateCpf(createUser.cpf) &&
             createUser.password !== '' &&
             createUser.password === createUser.confirmPassword
         ) {
