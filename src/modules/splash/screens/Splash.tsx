@@ -9,7 +9,7 @@ import { MenuUrl } from "../../../shared/enums/MenuUrl.enum";
 import { getAuthorizationToken } from "../../../shared/functions/connections/auth";
 import { UserType } from "../../../shared/types/usetType";
 
-const TIME_SLEEP = 5000
+const TIME_SLEEP = 1000
 
 const Splash = () => {
     const { reset } = useNavigation<NavigationProp<ParamListBase>>();

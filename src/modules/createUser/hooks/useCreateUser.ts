@@ -1,17 +1,19 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CreateUserType } from "../../../shared/types/createUserType";
 import { useRequest } from "../../../shared/hooks/useRequest";
 import { URL_USER } from "../../../shared/constants/urls";
 import { MethodEnum } from "../../../enums/methods.enums";
 import { NavigationProp, ParamListBase, useNavigation } from "@react-navigation/native";
 import { MenuUrl } from "../../../shared/enums/MenuUrl.enum";
-import { NativeSyntheticEvent } from "react-native/Libraries/Types/CoreEventTypes";
-import { TextInputChangeEventData } from "react-native/Libraries/Components/TextInput/TextInput";
+import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native/types";
+import { insertKaskInCpf } from "../../../shared/functions/cpf";
+import { insertKaskInPhone } from "../../../shared/functions/phone";
 
 export const useCreateUser = () => {
     const { reset } = useNavigation<NavigationProp<ParamListBase>>();
     const { request, loading } = useRequest();
-    const [createUser, setCreateuser] = useState<CreateUserType>({
+    const [disabled, setDisabled] = useState<boolean>(true);
+    const [createUser, setCreateUser] = useState<CreateUserType>({
         confirmPassword: '',
         cpf: '',
         email: '',
@@ -19,6 +21,22 @@ export const useCreateUser = () => {
         password: '',
         phone: '',
     });
+
+    useEffect(() => {
+        if (
+            createUser.name !== '' &&
+            createUser.phone !== '' &&
+            createUser.email !== '' &&
+            createUser.cpf !== '' &&
+            createUser.password !== '' &&
+            createUser.password === createUser.confirmPassword
+        ) {
+            setDisabled(false);
+        } else {
+            setDisabled(true)
+        }
+    }, [createUser])
+
     const handleCreateUser = async () => {
        const resultCreateUser = await request({
             url: URL_USER,
@@ -38,14 +56,28 @@ export const useCreateUser = () => {
         event: NativeSyntheticEvent<TextInputChangeEventData>,
         name: string,
     ) => {
-        setCreateuser((currentCreateUser) => ({
+        let text = event.nativeEvent.text;
+        switch (name) {
+            case 'cpf':
+                text = insertKaskInCpf(text);
+                break;
+            case 'phone':
+                text = insertKaskInPhone(text);
+                break;
+            default:
+                text = event.nativeEvent.text;
+                break;
+        }
+        console.log('Text', text)
+        setCreateUser((currentCreateUser) => ({
             ...currentCreateUser,
-            [name]: event.nativeEvent.text
+            [name]: text,
         }))
     }
     return {
         createUser,
         loading,
+        disabled,
         handleOnChangeInput,
         handleCreateUser,
         
