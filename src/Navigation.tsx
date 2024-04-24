@@ -41,11 +41,18 @@ const TabNavigation = () => {
 
           tabBarActiveTintColor: theme.color.mainTheme.primary,
           tabBarInactiveTintColor: theme.color.grayTheme.gray80,
+          tabBarLabelStyle: {
+            marginBottom: 8,
+          },
+          tabBarStyle: {
+            height: 52,
+            padding: 8,
+          }
         })}
       >
         <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Tab.Screen name="Orders" component={Orders} options={{ title: 'Pedidos', headerShown: false}} />
-        <Tab.Screen name="Profile" component={Profile} options={{ title: 'Perfil', headerShown: false}} />
+        <Tab.Screen name="Profile" component={Profile } options={{ title: 'Perfil', headerShown: false}} />
 
           </Tab.Navigator>
   )
